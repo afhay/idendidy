@@ -8,6 +8,7 @@ import Image from "next/image";
 import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useDidStore } from "@/libs/zustand";
+import CopyToClipboard from "react-copy-to-clipboard";
 
 export default function Home() {
   const walletNameRef = useRef();
@@ -29,19 +30,24 @@ export default function Home() {
     const didIon = await DidIonMethod.create();
     addADid({ name: walletName, ...didIon });
 
-    toast("new DID created!", {
+    myToast("new DID created!");
+
+    setIsOpen(false);
+    setIsSubmitting(false);
+  };
+
+  const myToast = (msg, emoji = "🚀") => {
+    toast.dismiss();
+    toast(msg, {
       position: "bottom-center",
-      icon: "🚀",
+      icon: emoji,
       style: {
         borderRadius: "10px",
         background: "#333",
         color: "#fff",
       },
     });
-
-    setIsOpen(false);
-    setIsSubmitting(false);
-  };
+  }
 
   return (
     <main className="h-screen bg-zinc-950 text-white p-0 sm:p-8">
@@ -69,10 +75,12 @@ export default function Home() {
                 <div key={i.did} className="bg-zinc-800 rounded-xl p-4 border border-zinc-800 hover:bg-zinc-950 transition-all">
                   <h5 className="mb-2">{i.name}</h5>
                   <div className="flex items-center justify-between bg-white/10 p-3 rounded-md">
-                    <p className="truncate flex-1">{i.did}</p>
-                    <button className="shrink-0 hover:text-orange-500 hover:scale-110 transition-all active:scale-95">
-                      <Icon icon="uil:copy" className="w-6 h-6" />
-                    </button>
+                    <p className="truncate flex-1 text-white/60">{i.did}</p>
+                    <CopyToClipboard text={i.did} onCopy={() => myToast("Tbe "+ i.name + " is copied", "✅")}>
+                      <button className="shrink-0 hover:text-orange-500 hover:scale-110 transition-all active:scale-95">
+                        <Icon icon="uil:copy" className="w-6 h-6" />
+                      </button>
+                    </CopyToClipboard>
                   </div>
                 </div>
               ))}
