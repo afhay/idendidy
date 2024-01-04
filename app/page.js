@@ -1,17 +1,34 @@
 "use client";
 
+import { Web5 } from "@web5/api";
+import { DidIonMethod } from "@web5/dids";
 import toast, { Toaster } from "react-hot-toast";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
 import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { useDidStore } from "@/libs/zustand";
 
 export default function Home() {
   const walletNameRef = useRef();
-  let [isOpen, setIsOpen] = useState(true);
-  const [dids, setDids] = useState([]);
+  let [isOpen, setIsOpen] = useState(false);
+  let [isSubmitting, setIsSubmitting] = useState(false);
+
+  const dids = useDidStore((state) => state.dids);
+  const addADid = useDidStore((state) => state.addADid);
 
   const handleNewDid = async () => {
+    setIsSubmitting(true);
+    const walletName = walletNameRef.current.value;
+    if (!walletName) {
+      toast.dismiss();
+      setIsSubmitting(false);
+      return toast.error("Wallet name is required", { position: "bottom-center" });
+    }
+
+    const didIon = await DidIonMethod.create();
+    addADid({ name: walletName, ...didIon });
+
     toast("new DID created!", {
       position: "bottom-center",
       icon: "🚀",
@@ -21,6 +38,9 @@ export default function Home() {
         color: "#fff",
       },
     });
+
+    setIsOpen(false);
+    setIsSubmitting(false);
   };
 
   return (
@@ -112,15 +132,18 @@ export default function Home() {
                   <div className="mt-4 flex items-center gap-2">
                     <button
                       type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 transition-all"
+                      className="inline-flex items-center justify-center gap-1 rounded-md border border-transparent bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 transition-all disabled:contrast-50 disabled:hover:bg-orange-600 disabled:cursor-not-allowed"
                       onClick={() => handleNewDid()}
+                      disabled={isSubmitting}
                     >
+                      {isSubmitting && <Icon icon="mingcute:loading-fill" className="animate-spin" />}
                       Submit
                     </button>
                     <button
                       type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-orange-100 px-4 py-2 text-sm font-medium text-orange-900 hover:bg-orange-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 transition-all"
+                      className="inline-flex justify-center rounded-md border border-transparent bg-orange-100 px-4 py-2 text-sm font-medium text-orange-900 hover:bg-orange-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 transition-all disabled:contrast-50 disabled:hover:bg-orange-600 disabled:cursor-not-allowed"
                       onClick={() => setIsOpen(false)}
+                      disabled={isSubmitting}
                     >
                       Cancel
                     </button>
