@@ -1,12 +1,11 @@
 "use client";
 
-import { Web5 } from "@web5/api";
 import { DidIonMethod } from "@web5/dids";
 import toast, { Toaster } from "react-hot-toast";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
 import { Fragment, useRef, useState } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import { Dialog, Menu, Transition } from "@headlessui/react";
 import { useDidStore } from "@/libs/zustand";
 import CopyToClipboard from "react-copy-to-clipboard";
 import Link from "next/link";
@@ -50,23 +49,75 @@ export default function Home() {
     });
   };
 
+  const handleImport = () => {};
+  const handleExport = () => {};
+
   return (
     <main className="h-screen bg-zinc-950 text-white p-0 sm:p-8">
       <div className="w-full flex flex-col sm:max-w-md mx-auto h-full rounded-none sm:rounded-xl bg-zinc-900 border border-zinc-800 py-4 pl-4">
-        <div className="flex items-center justify-between mb-4 shrink-0 pr-4">
+        <div className="flex items-center justify-between mb-4 shrink-0 pr-2">
           <div className="flex items-center gap-2">
             <Icon icon="heroicons:finger-print-16-solid" className="w-7 h-7" />
             <h1 className="text-xl font-bold">
               Iden<span className="text-orange-500">did</span>y
             </h1>
           </div>
-          <button
-            className="bg-orange-600 flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-md hover:bg-orange-700 transition-all"
-            onClick={() => setIsOpen(true)}
-          >
-            <Icon icon="heroicons:plus-16-solid" className="w-4 h-4" />
-            New DID
-          </button>
+          <div className="flex items-center gap-0">
+            <button
+              className="bg-orange-600 flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-md hover:bg-orange-700 transition-all"
+              onClick={() => setIsOpen(true)}
+            >
+              <Icon icon="heroicons:plus-16-solid" className="w-4 h-4" />
+              New DID
+            </button>
+            <Menu as="div" className="relative inline-block text-left">
+              <div>
+                <Menu.Button className="inline-flex w-full justify-center rounded-md bg-black/20 px-4 py-2 text-sm font-medium text-white hover:bg-black/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75">
+                  <Icon icon="pepicons-pop:dots-y" className="w-6 h-6" />
+                </Menu.Button>
+              </div>
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items className="absolute z-20 right-0 mt-2 w-44 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none">
+                  <div className="px-1 py-1 ">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <button
+                          onClick={() => handleImport()}
+                          className={`${
+                            active ? "bg-orange-500 text-white" : "text-gray-900"
+                          } gap-2 group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                        >
+                          <Icon icon="uil:import" className="w-4 h-4" />
+                          Import
+                        </button>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <button
+                          onClick={() => handleExport()}
+                          className={`${
+                            active ? "bg-orange-500 text-white" : "text-gray-900"
+                          } gap-2 group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                        >
+                          <Icon icon="uil:export" className="w-4 h-4" />
+                          Export
+                        </button>
+                      )}
+                    </Menu.Item>
+                  </div>
+                </Menu.Items>
+              </Transition>
+            </Menu>
+          </div>
         </div>
 
         <div className="flex-1 space-y-2 overflow-y-auto scrollbar scrollbar-w-1 scrollbar-thumb-orange-500 scrollbar-track-zinc-700 pr-3">
