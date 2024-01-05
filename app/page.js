@@ -9,6 +9,7 @@ import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useDidStore } from "@/libs/zustand";
 import CopyToClipboard from "react-copy-to-clipboard";
+import Link from "next/link";
 
 export default function Home() {
   const walletNameRef = useRef();
@@ -47,7 +48,7 @@ export default function Home() {
         color: "#fff",
       },
     });
-  }
+  };
 
   return (
     <main className="h-screen bg-zinc-950 text-white p-0 sm:p-8">
@@ -72,11 +73,19 @@ export default function Home() {
           {dids.length > 0 ? (
             <>
               {dids.map((i) => (
-                <div key={i.did} className="bg-zinc-800 rounded-xl p-4 border border-zinc-800 hover:bg-zinc-950 transition-all">
-                  <h5 className="mb-2">{i.name}</h5>
-                  <div className="flex items-center justify-between bg-white/10 p-3 rounded-md">
+                <div key={i.did} className="bg-zinc-800 rounded-xl p-4 border border-zinc-800 hover:bg-zinc-950 transition-all group relative overflow-hidden">
+                  <div className="flex items-center justify-between">
+                    <h5 className="mb-2">{i.name}</h5>
+                    <div className="sm:translate-x-24 sm:group-hover:translate-x-0 sm:opacity-0 sm:transition-all sm:duration-300 sm:group-hover:opacity-100">
+                      <Link href={`/${i.canonicalId}`} className="flex items-center gap-2 text-white/50 sm:text-orange-500 font-medium">
+                        <p className="text-sm sm:text-xs">Detail</p>
+                        <Icon icon="teenyicons:arrow-right-solid" />
+                      </Link>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between bg-white/10 p-3 rounded-md gap-2">
                     <p className="truncate flex-1 text-white/60">{i.did}</p>
-                    <CopyToClipboard text={i.did} onCopy={() => myToast("Tbe "+ i.name + " is copied", "✅")}>
+                    <CopyToClipboard text={i.did} onCopy={() => myToast("Tbe " + i.name + " is copied", "✅")}>
                       <button className="shrink-0 hover:text-orange-500 hover:scale-110 transition-all active:scale-95">
                         <Icon icon="uil:copy" className="w-6 h-6" />
                       </button>
