@@ -17,6 +17,7 @@ export default function Home() {
 
   const dids = useDidStore((state) => state.dids);
   const addADid = useDidStore((state) => state.addADid);
+  const setDids = useDidStore((state) => state.setDids);
 
   const handleNewDid = async () => {
     setIsSubmitting(true);
@@ -49,8 +50,44 @@ export default function Home() {
     });
   };
 
-  const handleImport = () => {};
-  const handleExport = () => {};
+  const handleImport = () => {
+    let input = document.createElement("input");
+    input.type = "file";
+    input.onchange = (e) => {
+      let file = e.target.files[0];
+      if (file.type !== "application/json") {
+        return myToast("File not valid", "🚫");
+      }
+
+      var reader = new FileReader();
+      reader.readAsText(file, "UTF-8");
+
+      reader.onload = (readerEvent) => {
+        const content = readerEvent.target.result;
+        const jsonContent = JSON.parse(content);
+
+        if (!jsonContent?.dids) {
+          return myToast("Data not found", "🚫");
+        }
+
+        setDids(jsonContent?.dids);
+        return myToast("Imported");
+      };
+    };
+    input.click();
+  };
+
+  const handleExport = () => {
+    if (!dids.length > 0) {
+      return myToast("Data not found", "🚫");
+    }
+
+    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ dids: dids }));
+    var dlAnchorElem = document.createElement("a");
+    dlAnchorElem.setAttribute("href", dataStr);
+    dlAnchorElem.setAttribute("download", "idendidy.json");
+    dlAnchorElem.click();
+  };
 
   return (
     <main className="h-screen bg-zinc-950 text-white p-0 sm:p-8">
